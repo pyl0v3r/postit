@@ -66,7 +66,7 @@ This project intentionally includes realistic security flaws commonly seen in pr
 
 ## Threat Modeling
 
-A full threat model is included in [`THREATMODEL.md`](./THREATMODEL.md).
+A full threat model is included in [`THREATMODEL.md`](./Threat_Model.md).
 
 The threat model covers:
 - System assets and trust boundaries
