@@ -12,6 +12,17 @@ exports.createComment = async (req, res) => {
 
   res.status(201).json(comment);
 };
+exports.getCommentsByPost = async (req, res) => {
+    const { postId } = req.params;
+    const comments = await Comment.find({ post: postId }).populate('author', 'username');
+    res.json(comments);
+};
+exports.updateComment = async (req, res) => {
+  const { content } = req.body; 
+  req.comment.content = content;
+  await req.comment.save();
+  res.json(req.comment);
+};
 
 exports.deleteComment = async (req, res) => {
   const { commentId } = req.params;

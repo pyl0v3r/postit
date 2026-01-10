@@ -18,32 +18,14 @@ exports.getAllPosts = async (req, res) => {
 };
 
 exports.updatePost = async (req, res) => {
-  const { postId } = req.params;
   const { title, content } = req.body;
-
-  //  VULNERABILITY: No ownership check (IDOR)
-  const post = await Post.findByIdAndUpdate(
-    postId,
-    { title, content },
-    { new: true }
-  );
-
-  if (!post) {
-    return res.status(404).json({ message: 'Post not found' });
-  }
-
-  res.json(post);
+  req.post.title = title;
+  req.post.content = content;
+  await req.post.save();
+  res.json(req.post);
 };
 
 exports.deletePost = async (req, res) => {
-  const { postId } = req.params;
-
-  //  VULNERABILITY: No ownership check (IDOR)
-  const post = await Post.findByIdAndDelete(postId);
-
-  if (!post) {
-    return res.status(404).json({ message: 'Post not found' });
-  }
-
+  await req.post.deleteOne();
   res.json({ message: 'Post deleted' });
 };
