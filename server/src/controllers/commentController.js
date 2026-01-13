@@ -1,4 +1,5 @@
 const Comment = require('../models/Comment');
+const Post = require('../models/Post');
 
 exports.createComment = async (req, res) => {
   const { postId } = req.params;
@@ -8,6 +9,10 @@ exports.createComment = async (req, res) => {
     content,
     post: postId,
     author: req.user.userId
+  });
+  // Link comment to post
+  await Post.findByIdAndUpdate(postId, {
+    $push: { comments: comment._id }
   });
 
   res.status(201).json(comment);
@@ -27,12 +32,12 @@ exports.updateComment = async (req, res) => {
 exports.deleteComment = async (req, res) => {
   const { commentId } = req.params;
 
-  //  VULNERABILITY: No ownership check
-  const comment = await Comment.findByIdAndDelete(commentId);
+  await Comment.deleteOne({ _id: commentId });
 
-  if (!comment) {
-    return res.status(404).json({ message: 'Comment not found' });
-  }
+  // Remove reference from post
+  await Post.findByIdAndUpdate(comment.post, {
+    $pull: { comments: commentId }
+  });
 
   res.json({ message: 'Comment deleted' });
 };

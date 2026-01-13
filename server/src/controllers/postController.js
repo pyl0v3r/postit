@@ -1,4 +1,5 @@
 const Post = require('../models/Post');
+const Comment = require('../models/Comment');
 
 exports.createPost = async (req, res) => {
   const { title, content } = req.body;
@@ -13,7 +14,12 @@ exports.createPost = async (req, res) => {
 };
 
 exports.getAllPosts = async (req, res) => {
-  const posts = await Post.find().populate('author', 'username');
+const posts = await Post.find()
+  .populate('author', 'username')
+  .populate({
+    path: 'comments',
+    populate: { path: 'author', select: 'username' }
+  });
   res.json(posts);
 };
 
@@ -26,6 +32,9 @@ exports.updatePost = async (req, res) => {
 };
 
 exports.deletePost = async (req, res) => {
-  await req.post.deleteOne();
+  const { postId } = req.params;
+  // Delete all comments belonging to this post
+  await Comment.deleteMany({ post: postId });
+  await Post.deleteOne({_id: postId });
   res.json({ message: 'Post deleted' });
 };

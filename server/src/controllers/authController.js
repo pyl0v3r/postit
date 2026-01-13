@@ -32,3 +32,8 @@ exports.login = async (req, res) => {
 
   res.json({ token });
 };
+
+exports.getCurrentUser = async (req, res) => {
+  const user = await User.findById(req.params.userId).select('-password');
+  res.json(user);
+}
