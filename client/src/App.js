@@ -4,6 +4,7 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { fetchPosts, createPost, updatePost, deletePost, createComment, deleteComment } from './api';
 import Login from './Login';
 import Register from './Register';
+import DOMPurify from 'dompurify';
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -22,14 +23,14 @@ function App() {
     setPosts(data);
   };
 
- useEffect(() => {
-  if (token) {
-    loadCurrentUser();
-  } else {
-    setCurrentUser(null);
-  }
-  loadPosts();
-}, [token]);
+  useEffect(() => {
+    if (token) {
+      loadCurrentUser();
+    } else {
+      setCurrentUser(null);
+    }
+    loadPosts();
+  }, [token]);
 
   const handleLogout = () => {
     setToken('');
@@ -182,7 +183,11 @@ function PostCard({ post, refresh, token, currentUser }) {
             currentUser && c.author && c.author._id === currentUser.userId;
           return (
             <div key={c._id} className="comment">
-              <div dangerouslySetInnerHTML={{ __html: c.content }} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(c.content)
+                }}
+              />
 
               {token && isCommentOwner && (
                 <button
