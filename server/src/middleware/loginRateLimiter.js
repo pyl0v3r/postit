@@ -5,6 +5,9 @@ const loginRateLimiter = rateLimit({
   max: 5, // 5 attempts per IP
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => {
+    return `${req.ip}:${req.body.email || 'unknown'}`;
+  },
   message: {
     message: 'Too many login attempts. Please try again later.'
   }
